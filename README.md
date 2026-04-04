@@ -9,7 +9,7 @@ Web UI with live pipeline visualization, REST API, Docker, and CLI. Bring your o
 <div align="center">
 
 
-https://github.com/user-attachments/assets/VIDEO_ID_HERE
+https://github.com/user-attachments/assets/c4df8893-7764-43c3-b004-ef610fec710f
 
 
 **Topic in, MP4 out.** This video was generated in a single command:
