@@ -28,16 +28,49 @@ export interface CLIOptions {
   stockConfidence: number;
   stockMaxAttempts: number;
   verificationModel?: string;
+  usage: boolean;
+}
+
+function makeUsageResult(outputDir: string): CLIOptions {
+  return {
+    topic: "",
+    provider: "anthropic" as LLMProviderKey,
+    imageProvider: "gemini" as ImageProviderKey,
+    ttsProvider: "elevenlabs" as TTSProviderKey,
+    musicProvider: "bundled" as MusicProviderKey,
+    noVideo: false,
+    platform: "youtube",
+    dryRun: false,
+    preview: false,
+    output: outputDir,
+    yes: false,
+    noMusic: false,
+    stockVerify: true,
+    stockConfidence: 0.6,
+    stockMaxAttempts: 4,
+    usage: true,
+  };
 }
 
 export function parseArgs(): CLIOptions {
+  // Check for --usage before commander parses, because `pnpm start -- --usage`
+  // puts a `--` in argv that stops commander's option parsing.
+  if (process.argv.includes("--usage")) {
+    // Extract -o/--output if provided alongside --usage
+    const oIdx = process.argv.indexOf("-o");
+    const outIdx = process.argv.indexOf("--output");
+    const idx = oIdx !== -1 ? oIdx : outIdx;
+    const outputDir = idx !== -1 && process.argv[idx + 1] ? process.argv[idx + 1]! : "./output";
+    return makeUsageResult(outputDir);
+  }
+
   const program = new Command();
 
   program
     .name("openreels")
     .description("AI pipeline that turns any topic into a YouTube Short")
     .version(version)
-    .argument("<topic>", "The topic for your video")
+    .argument("[topic]", "The topic for your video")
     .addOption(
       new Option("-p, --provider <provider>", "LLM provider (use 'google' to set LLM+image+video to Gemini)")
         .choices(["anthropic", "openai", "gemini", "google", "local"])
@@ -80,14 +113,20 @@ export function parseArgs(): CLIOptions {
     )
     .option("--video-model <model>", "Video model override (e.g. veo-3.1-lite-preview, fal-ai/kling-video/v2.1/standard/image-to-video)")
     .option("--video", "Enable AI video generation (use --no-video to disable)", true)
+    .option("--usage", "Show cost usage report from past runs in the output directory", false)
     .parse();
+
+  const opts = program.opts();
+
+  // --usage flag or "usage" as topic → show cost report
+  if (opts["usage"] || program.args[0] === "usage") {
+    return makeUsageResult((opts["output"] as string) ?? "./output");
+  }
 
   const topic = program.args[0] ?? "";
   if (!topic) {
     program.error("Topic is required");
   }
-
-  const opts = program.opts();
 
   // --provider google is a convenience alias that sets LLM+image+video to Gemini.
   // --provider local sets TTS to Kokoro (free local inference, no API key needed).
@@ -141,5 +180,6 @@ export function parseArgs(): CLIOptions {
     stockConfidence: opts["stockConfidence"] as number,
     stockMaxAttempts: opts["stockMaxAttempts"] as number,
     verificationModel: opts["verificationModel"] as string | undefined,
+    usage: false,
   };
 }

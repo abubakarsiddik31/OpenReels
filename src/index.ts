@@ -1,12 +1,19 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "./cli/args.js";
+import { showUsageReport } from "./cli/usage-report.js";
 import { validateEnv } from "./cli/validate-env.js";
 import { createCliCallbacks, runPipeline } from "./pipeline/orchestrator.js";
 import { createProviders, createVerificationModel } from "./providers/factory.js";
 
 async function main(): Promise<void> {
   const opts = parseArgs();
+
+  // --usage: show cost report and exit
+  if (opts.usage) {
+    showUsageReport(opts.output);
+    return;
+  }
 
   // Validate required API keys before constructing providers
   validateEnv({
