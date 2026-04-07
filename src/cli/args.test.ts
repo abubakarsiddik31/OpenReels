@@ -21,6 +21,7 @@ describe("CLIOptions type", () => {
       stockConfidence: 0.6,
       stockMaxAttempts: 4,
       noVideo: false,
+      usage: false,
     };
     expect(opts.yes).toBe(true);
   });
@@ -42,6 +43,7 @@ describe("CLIOptions type", () => {
       stockConfidence: 0.6,
       stockMaxAttempts: 4,
       noVideo: false,
+      usage: false,
     };
     expect(opts.yes).toBe(false);
   });
@@ -63,6 +65,7 @@ describe("CLIOptions type", () => {
       stockConfidence: 0.6,
       stockMaxAttempts: 4,
       noVideo: false,
+      usage: false,
     };
     expect(opts.provider).toBe("gemini");
   });
@@ -85,6 +88,7 @@ describe("CLIOptions type", () => {
       stockConfidence: 0.6,
       stockMaxAttempts: 4,
       noVideo: false,
+      usage: false,
     };
     expect(opts.pacing).toBe("fast");
   });
@@ -106,6 +110,7 @@ describe("CLIOptions type", () => {
       stockConfidence: 0.6,
       stockMaxAttempts: 4,
       noVideo: false,
+      usage: false,
     };
     expect(opts.pacing).toBeUndefined();
   });
