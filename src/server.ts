@@ -157,6 +157,7 @@ app.get("/api/v1/providers", async () => ({
 // --- Job creation ---
 interface CreateJobBody {
   topic: string;
+  context?: string;
   archetype?: string;
   pacing?: string;
   platform?: string;
@@ -176,7 +177,7 @@ interface CreateJobBody {
 }
 
 app.post<{ Body: CreateJobBody }>("/api/v1/jobs", async (request, reply) => {
-  const { topic, archetype, pacing, platform, dryRun, noMusic, noVideo, providers, keys } = request.body ?? {};
+  const { topic, context, archetype, pacing, platform, dryRun, noMusic, noVideo, providers, keys } = request.body ?? {};
 
   if (!topic || typeof topic !== "string" || topic.trim().length === 0) {
     return reply.status(400).send({ error: "topic is required" });
@@ -210,8 +211,14 @@ app.post<{ Body: CreateJobBody }>("/api/v1/jobs", async (request, reply) => {
       .send({ error: `Unknown platform: ${platform}. Available: ${validPlatforms.join(", ")}` });
   }
 
+  // Validate context if provided
+  if (context !== undefined && (typeof context !== "string" || context.trim().length > 5000)) {
+    return reply.status(400).send({ error: "context must be a string of 5000 characters or fewer" });
+  }
+
   const job = await queue.add("render", {
     topic: topic.trim(),
+    context: context?.trim() || undefined,
     archetype,
     pacing,
     platform: platform ?? "youtube",

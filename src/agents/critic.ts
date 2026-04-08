@@ -30,6 +30,7 @@ export async function evaluate(
   score: DirectorScore,
   topic: string,
   pacingOverride?: string,
+  context?: string,
 ): Promise<CritiqueOutput> {
   let systemPrompt =
     "You are a video quality critic. Evaluate the DirectorScore for hook strength, visual variety, pacing, script quality, and overall coherence. Score 1-10. If below 7, provide specific revision instructions targeting the weakest scene.";
@@ -75,7 +76,7 @@ Evaluate pacing against these tier-specific thresholds, NOT a fixed "5-7 scenes"
 DirectorScore:
 ${JSON.stringify(score, null, 2)}
 
-Evaluate this video plan. Score it 1-10. If it scores below 7, identify the weakest scene and provide specific revision instructions.`;
+Evaluate this video plan. Score it 1-10. If it scores below 7, identify the weakest scene and provide specific revision instructions.${context ? `\n\nCreator's additional context and direction (evaluate whether the plan follows this):\n${context}` : ""}`;
 
   const result = await llm.generate({
     systemPrompt,

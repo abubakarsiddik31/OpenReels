@@ -38,7 +38,7 @@ export async function generateDirectorScore(
   llm: LLMProvider,
   topic: string,
   researchContext: ResearchResult,
-  options?: { archetype?: string; pacing?: string; videoEnabled?: boolean },
+  options?: { archetype?: string; pacing?: string; videoEnabled?: boolean; context?: string },
 ): Promise<DirectorScoreOutput> {
   let systemPrompt = buildDefaultPrompt();
 
@@ -89,7 +89,7 @@ Use ${visualTypes}.${videoGuidance}
 CRITICAL RULE: Never use the same visual_type more than 2 times in a row. With more scenes, plan your visual_type sequence BEFORE writing scenes to ensure variety.
 Every scene MUST have a script_line (the voiceover text).
 The first scene should be a strong hook.
-If over budget, cut a scene rather than cramming.`;
+If over budget, cut a scene rather than cramming.${options?.context ? `\n\nCreator's additional context and direction (follow this closely):\n${options.context}` : ""}`;
 
   const maxRetries = 3;
   let lastError: Error | null = null;

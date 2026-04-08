@@ -368,7 +368,7 @@ function buildPipelineWorkflow(
       cb.onStageStart?.("research");
       const start = Date.now();
       try {
-        const output = await research(opts.llm, inputData.topic);
+        const output = await research(opts.llm, inputData.topic, opts.context);
         llmUsages.push(output.usage);
         const dur = (Date.now() - start) / 1000;
         cb.onStageComplete?.("research", `${output.data.key_facts.length} facts`, dur);
@@ -414,6 +414,7 @@ function buildPipelineWorkflow(
         archetype: opts.archetype,
         pacing: opts.pacing,
         videoEnabled,
+        context: opts.context,
       });
       // Store on shared context via closure
       directorResult.score = cdOutput.data;
@@ -729,7 +730,7 @@ function buildPipelineWorkflow(
       cb.onStageStart?.("critic");
       const start = Date.now();
       try {
-        const critiqueOutput = await evaluate(opts.llm, score, opts.topic, opts.pacing);
+        const critiqueOutput = await evaluate(opts.llm, score, opts.topic, opts.pacing, opts.context);
         const critique = critiqueOutput.data;
         llmUsages.push(critiqueOutput.usage);
         const dur = (Date.now() - start) / 1000;

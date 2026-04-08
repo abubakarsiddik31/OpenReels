@@ -8,6 +8,7 @@ const { version } = require("../../package.json") as { version: string };
 
 export interface CLIOptions {
   topic: string;
+  context?: string;
   provider: LLMProviderKey;
   imageProvider: ImageProviderKey;
   ttsProvider: TTSProviderKey;
@@ -54,6 +55,7 @@ export function parseArgs(): CLIOptions {
         .default("elevenlabs"),
     )
     .option("--kokoro-voice <voice>", "Kokoro voice preset (e.g. af_heart, bf_emma, am_fenrir)", "af_heart")
+    .option("-c, --context <file>", "Path to a context file with additional topic details (e.g. topics/my-brief.md)")
     .option("-a, --archetype <archetype>", "Visual archetype override")
     .addOption(
       new Option("--pacing <tier>", "Pacing tier override (overrides archetype default)")
@@ -121,6 +123,7 @@ export function parseArgs(): CLIOptions {
 
   return {
     topic,
+    context: opts["context"] as string | undefined,
     provider: opts["provider"] as LLMProviderKey,
     imageProvider: opts["imageProvider"] as ImageProviderKey,
     ttsProvider: opts["ttsProvider"] as TTSProviderKey,

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import * as fs from "node:fs";
 import { parseArgs } from "./cli/args.js";
 import { validateEnv } from "./cli/validate-env.js";
 import { createCliCallbacks, runPipeline } from "./pipeline/orchestrator.js";
@@ -28,6 +29,21 @@ async function main(): Promise<void> {
     kokoroVoice: opts.kokoroVoice,
   });
 
+  // Read context file if provided
+  let context: string | undefined;
+  if (opts.context) {
+    try {
+      context = fs.readFileSync(opts.context, "utf-8").trim();
+      if (!context) {
+        console.warn(`Warning: Context file "${opts.context}" is empty, ignoring.`);
+        context = undefined;
+      }
+    } catch (err) {
+      console.error(`Error reading context file "${opts.context}":`, err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
+  }
+
   // Create CLI callbacks for terminal progress display
   const { callbacks, progress } = createCliCallbacks(opts.yes);
 
@@ -40,6 +56,7 @@ async function main(): Promise<void> {
   const result = await runPipeline(
     {
       topic: opts.topic,
+      context,
       llm,
       tts,
       ttsProvider: opts.ttsProvider,

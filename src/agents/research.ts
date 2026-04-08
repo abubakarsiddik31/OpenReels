@@ -18,7 +18,7 @@ export interface ResearchOutput {
   usage: LLMUsage;
 }
 
-export async function research(llm: LLMProvider, topic: string): Promise<ResearchOutput> {
+export async function research(llm: LLMProvider, topic: string, context?: string): Promise<ResearchOutput> {
   let systemPrompt =
     "You are a research assistant. Given a topic, search the web for current information and produce a structured research summary with key facts, mood/tone, and sources.";
 
@@ -28,9 +28,14 @@ export async function research(llm: LLMProvider, topic: string): Promise<Researc
     // Use default prompt if file doesn't exist
   }
 
+  let userMessage = `Research this topic for a short-form video script: ${topic}`;
+  if (context) {
+    userMessage += `\n\nAdditional context and direction from the creator:\n${context}`;
+  }
+
   const result = await llm.generate({
     systemPrompt,
-    userMessage: `Research this topic for a short-form video script: ${topic}`,
+    userMessage,
     schema: ResearchResult,
     enableWebSearch: true,
   });

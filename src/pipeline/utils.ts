@@ -45,6 +45,7 @@ export interface PipelineCallbacks {
 
 export interface PipelineOptions {
   topic: string;
+  context?: string;
   llm: LLMProvider;
   tts: TTSProvider;
   ttsProvider: TTSProviderKey;

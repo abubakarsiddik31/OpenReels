@@ -164,6 +164,7 @@ pnpm start "your topic" --archetype anime_illustration --provider openai
 | `--tts-provider <name>` | TTS provider (`elevenlabs`, `inworld`, `kokoro`, `gemini-tts`, `openai-tts`) | `elevenlabs` |
 | `--music-provider <name>` | Music provider (`bundled`, `lyria`) | `bundled` |
 | `--video-provider <name>` | Video provider (`gemini`, `fal`) | auto-detect |
+| `-c, --context <file>` | Path to a context file with extra direction (see [Context files](#context-files)) | none |
 | `--archetype <name>` | Override visual archetype | LLM chooses |
 | `--platform <name>` | Target platform (`youtube`, `tiktok`, `instagram`) | `youtube` |
 | `--dry-run` | Output DirectorScore JSON without generating assets | off |
@@ -177,6 +178,27 @@ pnpm start "your topic" --archetype anime_illustration --provider openai
 | `--video-model <model>` | Video model override | provider default |
 | `--kokoro-voice <voice>` | Kokoro voice preset | `af_heart` |
 | `-y, --yes` | Auto-confirm cost estimation (Docker/CI) | off |
+
+### Context files
+
+Want more control over the output? Write a context file with your angle, key points, tone, and constraints, then pass it with `--context`:
+
+```bash
+pnpm start "the apollo 13 disaster" --context topics/apollo-brief.md
+```
+
+The `topics/` folder is gitignored (your briefs stay private). See `topics/example.md` for a template.
+
+Context is injected into the research, creative director, and critic stages so the entire pipeline follows your direction. You can use markdown or plain text — there's no required format.
+
+Via the API, pass `context` as a string in the request body:
+
+```json
+{
+  "topic": "the apollo 13 disaster",
+  "context": "Focus on the human side, not technical details..."
+}
+```
 
 ## Cost transparency
 

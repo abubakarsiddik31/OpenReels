@@ -4,6 +4,9 @@ dist/
 .env
 staging_docs/
 output/
+topics/*
+!topics/example.md
+!topics/.gitkeep
 .next/
 docs/out/
 docs/src/data/
